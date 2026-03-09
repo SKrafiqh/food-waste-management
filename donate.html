@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate Food — FoodShare</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .ngo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .ngo-card {
+            background: var(--panel-bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            cursor: default;
+            transition: all 0.3s ease;
+        }
+
+        .ngo-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ngo-card .ngo-n {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .ngo-card .ngo-l {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ngo-card .ngo-ph {
+            font-size: 0.72rem;
+            color: var(--accent-primary);
+            margin-top: 6px;
+        }
+
+        .lookup-status {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .lookup-status.found {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .success-banner {
+            background: var(--accent-primary-light);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .success-banner h3 {
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body style="margin: 0; overflow-x: hidden;">
+
+    <div class="split-view">
+        <div class="split-visual" style="background: var(--gradient-primary);">
+            <div style="position: absolute; top: 28px; left: 28px;">
+                <a href="index.html" class="logo">🍽️ FoodShare</a>
+            </div>
+            <div style="z-index: 10; text-align: center; padding: 40px;" class="animate-fade-up">
+                <div style="font-size: 3.5rem; margin-bottom: 20px;">🎁</div>
+                <h2 style="font-size: 2.2rem; margin-bottom: 14px; font-family: 'Playfair Display', serif;">Quick Donate
+                </h2>
+                <p style="font-size: 1rem; max-width: 380px; margin: 0 auto;">Enter your location code to see nearby
+                    NGOs. Submit your food details and the NGOs in your area will be notified.</p>
+
+                <!-- Nearby NGOs panel -->
+                <div id="nearbyNgosPanel" style="margin-top: 28px; display: none;">
+                    <div
+                        style="background: rgba(255,255,255,0.12); padding: 18px; border-radius: 12px; text-align: left; backdrop-filter: blur(10px);">
+                        <h4
+                            style="font-size: 0.8rem; color: rgba(255,255,255,0.9); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                            📍 NGOs in Your Area:</h4>
+                        <div id="ngoListVisual" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="split-form">
+            <div style="position: absolute; top: 22px; right: 28px;">
+                <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">☀️</button>
+            </div>
+
+            <div style="max-width: 460px; width: 100%; margin: 0 auto;" class="animate-fade-up delay-1">
+                <span class="section-badge"
+                    style="background: var(--accent-primary-light); color: var(--accent-primary);">🌱 Public
+                    Donation</span>
+                <h1 style="font-size: 1.8rem; margin-bottom: 24px;">Donate Food</h1>
+
+                <div id="donateFormSection">
+                    <form id="normalDonorForm">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Your Name (optional)</label>
+                                <input type="text" id="donor_name" placeholder="Anonymous Donor">
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Location Code <span style="color: var(--accent-primary);">*</span></label>
+                                <input type="text" id="location_code" required placeholder="e.g. DEL-110001, BOM-400001"
+                                    style="text-transform: uppercase;">
+                                <div id="lookupStatus" class="lookup-status"></div>
+                            </div>
+
+                            <!-- NGO cards appear here -->
+                            <div id="ngoCardsSection" style="grid-column: span 2; display: none;">
+                                <label style="margin-bottom: 8px;">Nearby NGOs That Will Receive Your Donation:</label>
+                                <div id="ngoCards" class="ngo-cards"></div>
+                            </div>
+
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label>Food Description <span style="color: var(--accent-primary);">*</span></label>
+                                <input type="text" id="food_type" required
+                                    placeholder="e.g. 5 trays of vegetable biryani">
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity (kg) <span style="color: var(--accent-primary);">*</span></label>
+                                <input type="number" id="quantity_kg" required step="0.1" placeholder="10.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Expiry (hours) <span style="color: var(--accent-primary);">*</span></label>
+                                <input type="number" id="expiry_hours" required placeholder="24">
+                            </div>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn"
+                            style="width: 100%; margin-top: 6px; padding: 13px;">Donate Now 🎉</button>
+                    </form>
+                </div>
+
+                <!-- Success state -->
+                <div id="donateSuccess" style="display: none;">
+                    <div class="success-banner">
+                        <div style="font-size: 3rem; margin-bottom: 12px;">🎉</div>
+                        <h3>Donation Submitted!</h3>
+                        <p style="margin-bottom: 0;">Your food donation has been posted. NGOs in your area can now see
+                            and accept it from their dashboard.</p>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="donate.html" class="btn" style="padding: 12px 28px;">Donate Again</a>
+                        <a href="index.html" class="btn btn-secondary"
+                            style="padding: 12px 28px; margin-left: 10px;">Home</a>
+                    </div>
+                </div>
+
+                <p style="text-align: center; margin-top: 22px; color: var(--text-muted); font-size: 0.88rem;">
+                    Represent an organization? <a href="register.html"
+                        style="color: var(--accent-primary); text-decoration: none; font-weight: 700;">Register here
+                        →</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let lookupTimer = null;
+
+        // Auto-lookup NGOs when location code is entered
+        document.getElementById('location_code').addEventListener('input', function () {
+            const val = this.value.trim().toUpperCase();
+            clearTimeout(lookupTimer);
+
+            if (val.length >= 3) {
+                document.getElementById('lookupStatus').textContent = 'Searching...';
+                document.getElementById('lookupStatus').className = 'lookup-status';
+                lookupTimer = setTimeout(() => lookupNGOs(val), 400);
+            } else {
+                document.getElementById('lookupStatus').textContent = '';
+                document.getElementById('ngoCardsSection').style.display = 'none';
+                document.getElementById('nearbyNgosPanel').style.display = 'none';
+            }
+        });
+
+        async function lookupNGOs(locationCode) {
+            try {
+                const res = await fetch(`${API_URL}/ngos/nearby?location_code=${encodeURIComponent(locationCode)}`);
+                const result = await res.json();
+
+                const statusEl = document.getElementById('lookupStatus');
+                const cardsSection = document.getElementById('ngoCardsSection');
+                const cardsEl = document.getElementById('ngoCards');
+                const visualPanel = document.getElementById('nearbyNgosPanel');
+                const visualList = document.getElementById('ngoListVisual');
+
+                if (result.success && result.data.length > 0) {
+                    statusEl.textContent = `✅ ${result.data.length} NGO(s) found in your area!`;
+                    statusEl.className = 'lookup-status found';
+
+                    // Show cards in form
+                    cardsSection.style.display = 'block';
+                    cardsEl.innerHTML = result.data.map(ngo => `
+                        <div class="ngo-card animate-scale-in">
+                            <div class="ngo-n">🏛️ ${ngo.name}</div>
+                            <div class="ngo-l">📍 ${ngo.location_code}</div>
+                            ${ngo.contact_phone ? `<div class="ngo-ph">📞 ${ngo.contact_phone}</div>` : ''}
+                        </div>
+                    `).join('');
+
+                    // Show panel on left
+                    visualPanel.style.display = 'block';
+                    visualList.innerHTML = result.data.map(ngo => `
+                        <div style="background: rgba(255,255,255,0.1); padding: 10px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink:0;">🏛️</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 0.85rem;">${ngo.name}</div>
+                                <div style="font-size: 0.72rem; color: rgba(255,255,255,0.7);">${ngo.address || ngo.location_code}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    statusEl.textContent = '⚠️ No NGOs found for this location code. Your donation will still be posted.';
+                    statusEl.className = 'lookup-status';
+                    cardsSection.style.display = 'none';
+                    visualPanel.style.display = 'none';
+                }
+            } catch (err) {
+                document.getElementById('lookupStatus').textContent = 'Could not search. Server might be offline.';
+            }
+        }
+
+        // Override the form submission to show success state
+        document.getElementById('normalDonorForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+
+            try {
+                const body = {
+                    donor_name: document.getElementById('donor_name').value || 'Anonymous',
+                    food_type: document.getElementById('food_type').value,
+                    quantity_kg: parseFloat(document.getElementById('quantity_kg').value),
+                    expiry_hours: parseInt(document.getElementById('expiry_hours').value),
+                    location_code: document.getElementById('location_code').value.trim().toUpperCase()
+                };
+
+                const res = await fetch(`${API_URL}/donate/normal`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast('Your food donation has been posted! NGOs can now accept it.', 'success', 'Donation Submitted');
+                    document.getElementById('donateFormSection').style.display = 'none';
+                    document.getElementById('donateSuccess').style.display = 'block';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                showToast(err.message, 'error', 'Submission Failed');
+                btn.disabled = false;
+                btn.textContent = 'Donate Now 🎉';
+            }
+        });
+    </script>
+</body>
+
+</html>

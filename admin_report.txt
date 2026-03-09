@@ -1,0 +1,5 @@
+=== FOODSHARE ADMIN MATCHING REPORT ===
+
+Matched Donation [058fbec2-90ee-4714-9b73-6ade4ba13990] ( Sambar & Coconut Chutney", MAA-600001) -> NGO [10d34629-3896-4d28-9722-c666ade6e6bd] (Score: 150)
+
+Total new matches found: 1

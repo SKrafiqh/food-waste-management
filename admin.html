@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — FoodShare</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+        }
+
+        .sys-log {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            padding: 14px;
+            height: 130px;
+            overflow-y: auto;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid var(--glass-border);
+            border-bottom-color: var(--accent-secondary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo" style="text-decoration:none;">🍽️ FoodShare</a>
+            </div>
+            <div class="sidebar-user">
+                <div class="user-avatar userInitials" style="background: var(--gradient-secondary);">AD</div>
+                <div class="user-info">
+                    <div class="user-name userNameDisplay">Admin</div>
+                    <div class="user-role" style="color: var(--accent-secondary);">ADMINISTRATOR</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="admin.html" class="nav-item active"
+                    style="background: var(--gradient-secondary); box-shadow: var(--shadow-glow-purple);">
+                    <span class="nav-icon">🛡️</span> Dashboard
+                </a>
+                <a href="#" onclick="logout()" class="nav-item" style="margin-top:auto; color: var(--accent-danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h2 style="font-size:1.15rem; margin:0;">Admin Dashboard</h2>
+                    <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">System health, analytics &
+                        user management</div>
+                </div>
+                <div class="topbar-actions">
+                    <button onclick="toggleTheme()" class="theme-toggle">☀️</button>
+                </div>
+            </header>
+
+            <div class="container">
+                <div class="dashboard-grid">
+
+                    <!-- Health -->
+                    <div class="glass-card animate-fade-up" style="grid-column: span 2;">
+                        <div class="flex-between" style="margin-bottom: 14px;">
+                            <h3 style="font-size: 0.95rem; margin: 0;">⚙️ System Health</h3>
+                            <span class="badge badge-success">LIVE</span>
+                        </div>
+                        <div class="health-grid">
+                            <div class="health-widget">
+                                <div class="health-label">CPU</div>
+                                <div class="health-value" id="sys-cpu">--%</div>
+                            </div>
+                            <div class="health-widget">
+                                <div class="health-label">Memory</div>
+                                <div class="health-value" id="sys-mem" style="color: var(--accent-secondary);">--%</div>
+                            </div>
+                            <div class="health-widget">
+                                <div class="health-label">Status</div>
+                                <div class="health-value" id="sys-status"
+                                    style="color: var(--accent-success); font-size: 1.3rem;">SYNCING</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;">Uptime: <span
+                                        id="sys-uptime">0</span>s</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="glass-card animate-fade-up delay-1">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 14px;">📊 Analytics</h3>
+                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Total
+                                    Donations</span>
+                                <span id="stat-donations"
+                                    style="font-size: 1.3rem; font-weight: 800; color: var(--accent-primary);">0</span>
+                            </div>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px;">
+                                <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Active
+                                    Requests</span>
+                                <span id="stat-requests"
+                                    style="font-size: 1.3rem; font-weight: 800; color: var(--accent-warm);">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span
+                                    style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Matched</span>
+                                <span id="stat-matches"
+                                    style="font-size: 1.3rem; font-weight: 800; color: var(--accent-secondary);">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Matching Engine -->
+                    <div class="glass-card animate-fade-up delay-2"
+                        style="border-left: 3px solid var(--accent-secondary);">
+                        <div class="flex-between" style="margin-bottom: 14px;">
+                            <div>
+                                <h3 style="font-size: 0.95rem; margin-bottom: 4px;">🧠 Matching Engine</h3>
+                                <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">Run the C-core
+                                    algorithm to match donations with requests.</p>
+                            </div>
+                            <button id="runMatchBtn" class="btn"
+                                style="background: var(--gradient-secondary); padding: 9px 16px; font-size: 0.82rem; box-shadow: var(--shadow-glow-purple);">▶
+                                Run</button>
+                        </div>
+                        <div id="matchLoader"
+                            style="display: none; align-items:center; gap:8px; padding: 12px; background: var(--bg-secondary); border-radius: var(--radius-sm);">
+                            <div class="spinner"></div>
+                            <span style="font-weight: 600; color: var(--text-muted); font-size: 0.82rem;">Running
+                                engine...</span>
+                        </div>
+                        <div id="matchReport" class="sys-log" style="display: none; margin-top:10px;"></div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="glass-card animate-fade-up delay-3" style="grid-column: span 2;">
+                        <div class="flex-between" style="margin-bottom: 14px;">
+                            <h3 style="font-size: 0.95rem; margin: 0;">👥 Registered Organizations</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="adminNodesTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Organization</th>
+                                        <th>Type</th>
+                                        <th>Location</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" style="text-align:center; color:var(--text-muted);">Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

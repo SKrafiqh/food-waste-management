@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodShare — Smart Food Redistribution Platform</title>
+    <meta name="description"
+        content="FoodShare connects restaurants with surplus food to NGOs who need it most. Donate food, save lives.">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 120px 0 60px 0;
+            position: relative;
+        }
+
+        .hero-section h1 {
+            font-size: 3.4rem;
+            line-height: 1.12;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+        }
+
+        .hero-section p.hero-subtitle {
+            font-size: 1.12rem;
+            max-width: 620px;
+            margin: 0 auto 32px auto;
+            color: var(--text-secondary);
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        /* Floating decorative shapes */
+        .hero-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .hero-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.08;
+        }
+
+        .hero-shapes .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-primary);
+            top: 60px;
+            right: 10%;
+            animation: float 7s infinite ease-in-out;
+        }
+
+        .hero-shapes .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-secondary);
+            top: 200px;
+            left: 5%;
+            animation: float 5s infinite ease-in-out reverse;
+        }
+
+        .hero-shapes .shape-3 {
+            width: 150px;
+            height: 150px;
+            background: var(--accent-warm);
+            bottom: 100px;
+            right: 20%;
+            animation: float 9s infinite ease-in-out;
+        }
+
+        .hero-section>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 80px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 36px 24px;
+        }
+
+        .feature-card .f-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 18px auto;
+        }
+
+        .feature-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.88rem;
+            margin: 0;
+        }
+
+        /* Stats Strip */
+        .stats-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .stat-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        /* Live Requests Section */
+        .live-section {
+            margin-top: 80px;
+            padding: 60px 0;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .live-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .live-header h2 {
+            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .live-header p {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .request-card .req-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .req-ngo-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .req-category {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+
+        .req-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .req-kg {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .pulse-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-danger);
+            animation: pulse 1.5s infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .pulse-dot.urgency-2 {
+            background: var(--accent-warm);
+        }
+
+        .pulse-dot.urgency-1 {
+            background: var(--accent-primary);
+            animation: none;
+        }
+
+        .no-requests {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-top: 60px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .requests-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="landing-nav">
+        <a href="index.html" class="logo">🍽️ FoodShare</a>
+        <div class="links">
+            <a href="index.html" class="active">Home</a>
+            <a href="#features">Features</a>
+            <a href="#live-requests">Food Needs</a>
+            <a href="donate.html">Donate</a>
+        </div>
+        <div class="flex-between" style="gap: 10px;" id="navAuth">
+            <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">☀️</button>
+            <a href="login.html" class="btn btn-secondary" style="padding: 8px 18px; font-size: 0.85rem;">Sign In</a>
+            <a href="register.html" class="btn" style="padding: 8px 18px; font-size: 0.85rem;">Get Started</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+
+            <div class="animate-fade-up">
+                <span class="section-badge"
+                    style="background: var(--accent-primary-light); color: var(--accent-primary);">🌱 Zero Waste
+                    Mission</span>
+            </div>
+            <h1 class="animate-fade-up delay-1">Every Meal Matters.<br><span class="text-gradient">Share Food, Save
+                    Lives.</span></h1>
+            <p class="hero-subtitle animate-fade-up delay-2">The intelligent platform connecting restaurants with
+                surplus food to NGOs and communities who need it most — powered by real-time smart matching.</p>
+            <div class="cta-group animate-fade-up delay-3">
+                <a href="register.html" class="btn" style="padding: 14px 30px; font-size: 1rem;">Join the Network →</a>
+                <a href="donate.html" class="btn btn-secondary" style="padding: 14px 30px; font-size: 1rem;">Quick
+                    Donate 🎁</a>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-strip animate-fade-up delay-4">
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--accent-primary);">14,280</div>
+                <div class="stat-label">kg Saved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--accent-secondary);">324</div>
+                <div class="stat-label">Matches Made</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--accent-warm);">18ms</div>
+                <div class="stat-label">Avg Latency</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: var(--accent-sky);">99.9%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features-grid" id="features">
+            <div class="glass-card feature-card animate-fade-up delay-1">
+                <div class="f-icon" style="background: var(--accent-primary-light);">⚡</div>
+                <h3>Smart Matching Engine</h3>
+                <p>Our C-core engine matches surplus food to nearby NGOs in milliseconds based on urgency, distance, and
+                    expiry window.</p>
+            </div>
+            <div class="glass-card feature-card animate-fade-up delay-2">
+                <div class="f-icon" style="background: var(--accent-secondary-light);">🛡️</div>
+                <h3>Secure & Reliable</h3>
+                <p>Enterprise-grade authentication, role-based dashboards for Restaurants, NGOs, and Admins with
+                    real-time monitoring.</p>
+            </div>
+            <div class="glass-card feature-card animate-fade-up delay-3">
+                <div class="f-icon" style="background: var(--accent-warm-light);">📊</div>
+                <h3>Live Analytics</h3>
+                <p>Track every donation, request, and successful match. Admin dashboard shows system health and network
+                    activity.</p>
+            </div>
+        </div>
+
+        <!-- Live Food Requests -->
+        <section class="live-section" id="live-requests">
+            <div class="live-header animate-fade-up">
+                <span class="section-badge"
+                    style="background: var(--accent-rose-light); color: var(--accent-rose);"><span
+                        class="pulse-dot"></span> Live Requests</span>
+                <h2>NGOs Need Your Help</h2>
+                <p>These organizations are actively requesting food donations. You can help by donating directly.</p>
+            </div>
+            <div class="requests-grid" id="liveRequestsGrid">
+                <div class="no-requests">
+                    <div style="font-size: 2rem; margin-bottom: 12px;">⏳</div>
+                    <p>Loading live food requests...</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 32px;" class="animate-fade-up">
+                <a href="donate.html" class="btn" style="padding: 14px 36px;">Donate Food Now →</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p style="margin:0;">© 2026 <a href="index.html">FoodShare</a> — Built with ❤️ to eliminate food waste across
+            India.</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // API_URL is already defined in app.js
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auth state
+            const token = localStorage.getItem('supabaseToken');
+            if (token) {
+                const role = localStorage.getItem('userRole');
+                let dashLink = 'donate.html';
+                if (role === 'RESTAURANT') dashLink = 'restaurant.html';
+                if (role === 'NGO') dashLink = 'ngo.html';
+                if (role === 'ADMIN') dashLink = 'admin.html';
+                document.getElementById('navAuth').innerHTML = `
+                    <button onclick="toggleTheme()" class="theme-toggle" title="Toggle Theme">☀️</button>
+                    <a href="${dashLink}" class="btn" style="padding: 8px 18px; font-size: 0.85rem;">Dashboard</a>
+                    <button onclick="logout()" class="btn btn-secondary" style="padding: 8px 18px; font-size: 0.85rem;">Sign Out</button>
+                `;
+            }
+
+            // Load live requests
+            loadLiveRequests();
+        });
+
+        async function loadLiveRequests() {
+            const grid = document.getElementById('liveRequestsGrid');
+            try {
+                const res = await fetch(`${API_URL}/requests/active`);
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    grid.innerHTML = result.data.map((req, i) => {
+                        const urgLabel = req.urgency === 3 ? 'CRITICAL' : req.urgency === 2 ? 'HIGH' : 'NORMAL';
+                        const urgClass = `urgency-${req.urgency}`;
+                        const urgBadge = req.urgency === 3 ? 'badge-danger' : req.urgency === 2 ? 'badge-pending' : 'badge-teal';
+                        const dotClass = req.urgency === 3 ? '' : req.urgency === 2 ? 'urgency-2' : 'urgency-1';
+                        const timeAgo = getTimeAgo(req.created_at);
+
+                        return `
+                        <div class="request-card ${urgClass} animate-fade-up" style="animation-delay: ${0.1 * i}s;">
+                            <div class="req-header">
+                                <div>
+                                    <div class="req-ngo-name">${req.ngo_name}</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">📍 ${req.ngo_location}</div>
+                                </div>
+                                <span class="badge ${urgBadge}"><span class="pulse-dot ${dotClass}"></span>${urgLabel}</span>
+                            </div>
+                            <div class="req-category">🍲 Needs: <strong>${req.food_category}</strong></div>
+                            <div class="req-footer">
+                                <div class="req-kg">${req.needed_kg} <span style="font-size:0.75rem; font-weight:600; color:var(--text-muted);">kg needed</span></div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">${timeAgo}</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    grid.innerHTML = `
+                        <div class="no-requests" style="grid-column: 1/-1;">
+                            <div style="font-size: 2.5rem; margin-bottom: 12px;">🎉</div>
+                            <p style="font-size: 1rem; font-weight: 600;">All requests fulfilled!</p>
+                            <p>No active food requests right now. Check back later or <a href="donate.html" style="color: var(--accent-primary); font-weight: 700;">make a proactive donation</a>.</p>
+                        </div>`;
+                }
+            } catch (err) {
+                grid.innerHTML = `
+                    <div class="no-requests" style="grid-column: 1/-1;">
+                        <p style="color: var(--accent-warm);">Unable to load live requests. The server may be offline.</p>
+                    </div>`;
+            }
+        }
+
+        function getTimeAgo(dateStr) {
+            const now = new Date();
+            const d = new Date(dateStr);
+            const diffMs = now - d;
+            const diffMin = Math.floor(diffMs / 60000);
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr}h ago`;
+            return `${Math.floor(diffHr / 24)}d ago`;
+        }
+    </script>
+</body>
+
+</html>

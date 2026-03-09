@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Dashboard — FoodShare</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .donation-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .donation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .donation-card .d-food {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .donation-card .d-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 14px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .donation-card .d-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .donation-cards-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .accept-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .accept-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-glow-green);
+        }
+
+        .accept-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            margin-left: 6px;
+            padding: 0 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo" style="text-decoration:none;">🍽️ FoodShare</a>
+            </div>
+            <div class="sidebar-user">
+                <div class="user-avatar userInitials" style="background: var(--gradient-secondary);">NG</div>
+                <div class="user-info">
+                    <div class="user-name userNameDisplay">NGO Hub</div>
+                    <div class="user-role" style="color: var(--accent-secondary);">RECEIVER</div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="ngo.html" class="nav-item active"
+                    style="background: var(--gradient-secondary); box-shadow: var(--shadow-glow-purple);">
+                    <span class="nav-icon">📡</span> Dashboard
+                </a>
+                <a href="#" onclick="logout()" class="nav-item" style="margin-top:auto; color: var(--accent-danger);">
+                    <span class="nav-icon">🚪</span> Sign Out
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h2 style="font-size:1.15rem; margin:0;">NGO Dashboard</h2>
+                    <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">Manage food requests and
+                        accept incoming donations</div>
+                </div>
+                <div class="topbar-actions">
+                    <button onclick="toggleTheme()" class="theme-toggle">☀️</button>
+                </div>
+            </header>
+
+            <div class="container">
+                <!-- Tabs -->
+                <div class="tab-bar">
+                    <button class="tab-btn active" onclick="switchTab('incoming')">📦 Incoming Donations <span
+                            id="incomingCount" class="count-badge" style="display:none;">0</span></button>
+                    <button class="tab-btn" onclick="switchTab('requests')">📢 My Requests</button>
+                    <button class="tab-btn" onclick="switchTab('newreq')">➕ New Request</button>
+                </div>
+
+                <!-- Tab 1: Incoming Donations -->
+                <div id="tab-incoming" class="tab-panel active">
+                    <div class="glass-card animate-fade-up">
+                        <div class="flex-between" style="margin-bottom: 14px;">
+                            <h3 style="font-size: 0.95rem; margin: 0;">Available Food in Your Area</h3>
+                            <button onclick="loadIncomingDonations()" class="btn btn-secondary"
+                                style="padding: 6px 14px; font-size: 0.78rem;">⟳ Refresh</button>
+                        </div>
+                        <div id="incomingDonations" class="donation-cards-grid">
+                            <div class="empty-state">⏳ Loading available donations...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: My Requests -->
+                <div id="tab-requests" class="tab-panel">
+                    <div class="glass-card animate-fade-up">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 10px;">📋 Active Requests</h3>
+                        <div class="table-responsive">
+                            <table id="ngoAllocationsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Needed</th>
+                                        <th>Urgency</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" style="text-align:center; color:var(--text-muted);">Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: New Request -->
+                <div id="tab-newreq" class="tab-panel">
+                    <div class="glass-card animate-fade-up" style="max-width: 500px;">
+                        <h3 style="font-size: 0.95rem; margin-bottom: 14px;">📢 Submit New Food Request</h3>
+                        <form id="ngoForm">
+                            <div class="form-group">
+                                <label>Food Category</label>
+                                <select id="food_category" required>
+                                    <option value="Any">🍽️ Any (General)</option>
+                                    <option value="Hot Meals">🍛 Prepared Hot Meals</option>
+                                    <option value="Produce">🥬 Raw Produce</option>
+                                    <option value="Baked Goods">🍞 Baked Goods</option>
+                                </select>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div class="form-group">
+                                    <label>Needed (kg)</label>
+                                    <input type="number" id="needed_kg" required step="1" placeholder="50">
+                                </div>
+                                <div class="form-group">
+                                    <label>Urgency Level</label>
+                                    <select id="urgency" required>
+                                        <option value="1">1 — Normal</option>
+                                        <option value="2">2 — High</option>
+                                        <option value="3">3 — Critical 🔴</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" id="ngoBtnSubmit" class="btn"
+                                style="width: 100%; margin-top:6px; background: var(--gradient-secondary); box-shadow: var(--shadow-glow-purple);">Submit
+                                Request →</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let ngoProfile = null;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileStr = localStorage.getItem('userProfile');
+            if (profileStr) {
+                try { ngoProfile = JSON.parse(profileStr); } catch (e) { }
+            }
+
+            // Update sidebar user name
+            const nameEl = document.querySelector('.userNameDisplay');
+            if (nameEl && ngoProfile) nameEl.textContent = ngoProfile.name || 'NGO Hub';
+
+            const initialsEl = document.querySelector('.userInitials');
+            if (initialsEl && ngoProfile) initialsEl.textContent = (ngoProfile.name || 'NG').substring(0, 2).toUpperCase();
+
+            loadIncomingDonations();
+        });
+
+        async function loadIncomingDonations() {
+            const container = document.getElementById('incomingDonations');
+            const countBadge = document.getElementById('incomingCount');
+
+            if (!ngoProfile || !ngoProfile.location_code) {
+                container.innerHTML = '<div class="empty-state">⚠️ No location code found for your profile.</div>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/donations/incoming?location_code=${encodeURIComponent(ngoProfile.location_code)}`);
+                const result = await res.json();
+
+                if (result.success && result.data.length > 0) {
+                    countBadge.textContent = result.data.length;
+                    countBadge.style.display = 'inline-flex';
+
+                    container.innerHTML = result.data.map((d, i) => {
+                        const timeAgo = getTimeAgo(d.created_at);
+                        const expiry = d.expiry_hours;
+                        const isUrgent = expiry <= 4;
+
+                        return `
+                    <div class="donation-card animate-fade-up" style="animation-delay: ${0.05 * i}s;" id="donation-${d.id}">
+                        <div class="flex-between">
+                            <div class="d-food">🍲 ${d.food_type}</div>
+                            ${isUrgent ? '<span class="badge badge-danger">⏰ EXPIRING SOON</span>' : '<span class="badge badge-teal">AVAILABLE</span>'}
+                        </div>
+                        <div class="d-meta">
+                            <span>📦 <strong>${d.quantity_kg} kg</strong></span>
+                            <span>⏱️ Expires in ${expiry}h</span>
+                            <span>👤 ${d.donor_name || 'Restaurant'}</span>
+                            <span>🕐 ${timeAgo}</span>
+                        </div>
+                        <div class="flex-between">
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">📍 ${d.location_code}</div>
+                            <button class="accept-btn" onclick="acceptDonation('${d.id}', this)">✅ Accept Donation</button>
+                        </div>
+                    </div>`;
+                    }).join('');
+                } else {
+                    countBadge.style.display = 'none';
+                    container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📭</div>
+                        <p style="font-weight: 600;">No available donations in your area right now.</p>
+                        <p>New donations from ${ngoProfile.location_code} will appear here automatically.</p>
+                    </div>`;
+                }
+            } catch (err) {
+                container.innerHTML = '<div class="empty-state">⚠️ Could not load donations. Server may be offline.</div>';
+            }
+        }
+
+        async function acceptDonation(donationId, btn) {
+            btn.disabled = true;
+            btn.textContent = 'Accepting...';
+
+            try {
+                const res = await fetch(`${API_URL}/donations/${donationId}/accept`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ngo_id: ngoProfile?.id,
+                        ngo_name: ngoProfile?.name
+                    })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast('Donation accepted! Coordinate pickup with the donor.', 'success', 'Accepted!');
+                    const card = document.getElementById(`donation-${donationId}`);
+                    if (card) {
+                        card.style.borderLeftColor = 'var(--accent-success)';
+                        card.style.opacity = '0.6';
+                        btn.textContent = '✅ Accepted';
+                        btn.style.background = 'var(--accent-success)';
+                    }
+                    // Reload after a moment
+                    setTimeout(() => loadIncomingDonations(), 1500);
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (err) {
+                showToast(err.message, 'error', 'Accept Failed');
+                btn.disabled = false;
+                btn.textContent = '✅ Accept Donation';
+            }
+        }
+
+        function getTimeAgo(dateStr) {
+            const now = new Date();
+            const d = new Date(dateStr);
+            const diffMs = now - d;
+            const diffMin = Math.floor(diffMs / 60000);
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHr = Math.floor(diffMin / 60);
+            if (diffHr < 24) return `${diffHr}h ago`;
+            return `${Math.floor(diffHr / 24)}d ago`;
+        }
+    </script>
+</body>
+
+</html>

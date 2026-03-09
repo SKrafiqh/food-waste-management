@@ -1,0 +1,163 @@
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const { createClient } = require('@supabase/supabase-js');
+const { exec } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+// Load config
+dotenv.config({ path: '../.env' });
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!supabaseUrl || !supabaseKey) {
+    console.error("Missing Supabase credentials!");
+    process.exit(1);
+}
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ==========================================
+// ROUTES
+// ==========================================
+
+// 1. POST /donate/normal (Normal Donor)
+app.post('/donate/normal', async (req, res) => {
+    try {
+        const { donor_name, food_type, quantity_kg, expiry_hours, location_code, image_url } = req.body;
+
+        const { data, error } = await supabase
+            .from('donations')
+            .insert([{
+                donor_name, food_type, quantity_kg, expiry_hours, location_code, image_url,
+                restaurant_id: null, status: 'AVAILABLE'
+            }])
+            .select();
+
+        if (error) throw error;
+        res.status(201).json({ success: true, message: 'Donation submitted', data });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 2. POST /donate/restaurant (Restaurant Donor)
+app.post('/donate/restaurant', async (req, res) => {
+    try {
+        const { restaurant_id, food_type, quantity_kg, expiry_hours, location_code, image_url } = req.body;
+
+        const { data, error } = await supabase
+            .from('donations')
+            .insert([{
+                restaurant_id, food_type, quantity_kg, expiry_hours, location_code, image_url,
+                donor_name: null, status: 'AVAILABLE'
+            }])
+            .select();
+
+        if (error) throw error;
+        res.status(201).json({ success: true, message: 'Restaurant donation logged', data });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 3. POST /ngo/request (NGO places a food request)
+app.post('/ngo/request', async (req, res) => {
+    try {
+        const { ngo_id, food_category, urgency, needed_kg } = req.body;
+
+        const { data, error } = await supabase
+            .from('requests')
+            .insert([{
+                ngo_id, food_category, urgency, needed_kg, status: 'PENDING'
+            }])
+            .select();
+
+        if (error) throw error;
+        res.status(201).json({ success: true, message: 'Request submitted', data });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 4. GET /ngos/nearby (Suggest NGOs for Normal Donors)
+app.get('/ngos/nearby', async (req, res) => {
+    try {
+        const { location_code } = req.query;
+        let query = supabase.from('ngos').select('*');
+
+        if (location_code) {
+            query = query.eq('location_code', location_code);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        res.status(200).json({ success: true, data });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// 5. POST /admin/run-matching (Trigger C Engine via Python Bridge)
+app.post('/admin/run-matching', (req, res) => {
+    console.log("Admin triggered matching batch job.");
+    // Run Python bridge script
+    // Note: ensure we run it in the python_bridge directory context
+    const pythonBridgeDir = path.resolve(__dirname, '../python_bridge');
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+
+    exec(`${pythonCmd} run_matching.py`, { cwd: pythonBridgeDir }, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            // Still might be stdout if python failed midway
+            return res.status(500).json({ success: false, error: "Matching bridge failed", details: stderr || error.message });
+        }
+
+        console.log(`Matching Output:\n${stdout}`);
+
+        // Read the generated admin report
+        let reportText = "";
+        try {
+            reportText = fs.readFileSync(path.resolve(__dirname, '../data/admin_report.txt'), 'utf-8');
+        } catch (readErr) {
+            console.log("No report found or read error.");
+        }
+
+        res.status(200).json({ success: true, message: 'Batch matching completed', report: reportText, stdout });
+    });
+});
+
+// 6. GET /admin/analytics (Get system snapshot)
+app.get('/admin/analytics', async (req, res) => {
+    try {
+        // Gather some basic stats
+        const p1 = supabase.from('donations').select('*', { count: 'exact', head: true });
+        const p2 = supabase.from('requests').select('*', { count: 'exact', head: true });
+        const p3 = supabase.from('matches').select('*', { count: 'exact', head: true });
+
+        const [donations, requests, matches] = await Promise.all([p1, p2, p3]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                total_donations: donations.count,
+                total_requests: requests.count,
+                total_matches: matches.count
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`FoodShare Core API running on port ${PORT}`);
+});

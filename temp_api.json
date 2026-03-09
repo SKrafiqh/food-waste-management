@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "59c82841-a12e-4735-99a9-05cc579d9787",
+      "user_id": "cb0b24bb-c140-4ad0-a48c-c1d479588809",
+      "name": "NYC Downtown Shelter",
+      "location_code": "NYC-100",
+      "address": "100 Broadway, NY",
+      "contact_phone": "555-0100",
+      "created_at": "2026-02-22T18:49:42.600027+00:00"
+    },
+    {
+      "id": "b0e3934d-040c-42ef-be0b-75b4831c72d9",
+      "user_id": "5058c0c5-cc34-419e-ad46-d2ad58de4ebf",
+      "name": "Brooklyn Daily Relief",
+      "location_code": "NYC-100",
+      "address": "250 Brooklyn Ave",
+      "contact_phone": "555-0101",
+      "created_at": "2026-02-22T18:49:43.106547+00:00"
+    }
+  ]
+}

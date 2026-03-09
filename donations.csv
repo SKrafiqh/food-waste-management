@@ -1,0 +1,23 @@
+id,restaurant_id,donor_name,food_type,quantity_kg,expiry_hours,location_code,status
+ae90c190-bff4-4681-9e58-c5ad02c51986,,rafiqh,5 tray rice packets,15.0,24,524304,AVAILABLE
+5130e550-3f14-4093-9178-f9290c864e5a,,rafiqh,80 PACKS,90.0,48,NYC100,AVAILABLE
+6ff1c1e1-d236-48b8-9168-4384afc745a0,,RAFIQH,10 TRAY BIRIYANI,50.0,24,NYC-100,AVAILABLE
+a48c2ff9-b513-48e0-97f5-32e17d9e7de4,be7ac712-e316-48ce-8efb-0bac20e1ccf9,,Assorted Curry & Rice Tubs,45.5,6,DEL-110001,AVAILABLE
+28b361c9-3ee4-4615-abd2-236811c280e1,b93b0f27-f555-423a-ab13-0906246f5f2f,,Assorted Pav and Breads,20.0,12,BOM-400001,AVAILABLE
+08b391eb-7d2a-4f9b-b065-ce94f29baa8b,be7ac712-e316-48ce-8efb-0bac20e1ccf9,,Assorted Curry & Rice Tubs,45.5,6,DEL-110001,AVAILABLE
+591ce54a-9abf-4ef4-ba6f-dab0619dedee,b93b0f27-f555-423a-ab13-0906246f5f2f,,Assorted Pav and Breads,20.0,12,BOM-400001,AVAILABLE
+9f35fe3f-6cd8-4c31-a106-861e9912f685,1ab0b1b9-58ab-4dc9-8726-2c4c5417d7d4,,Chicken & Veg Biryani Tubs,100.0,4,HYD-500001,AVAILABLE
+ff943859-576f-4c8c-b11f-e0b770a35eef,48421460-b4fe-4da0-9c61-e0333e7c6e30,,Premium South Indian Thali Excess,60.0,5,MAA-600001,AVAILABLE
+5f617548-1536-43a1-85e9-8b99bbffec72,66fe8e6e-8451-472e-9939-57aad37d1f71,,Assorted Puff Pastries & Breads,35.0,24,CCU-700001,AVAILABLE
+e47897a0-3817-4772-a114-9f58d87ea31e,66fe8e6e-8451-472e-9939-57aad37d1f71,,Cakes and Muffins,15.0,48,CCU-700001,AVAILABLE
+31c0afa8-7359-4555-bb28-03337ab59ed2,,RAFIQH,5 TRAYS,10.0,24,110001,AVAILABLE
+81fc4f9d-7e9e-4693-b1a4-19d79b578ca0,,Ramesh Sharma,Dal Chawal & Roti (Home-cooked),8.0,3,DEL-110001,AVAILABLE
+4c7a6b2e-3543-44ef-b45b-a9ab38876dea,,Priya Mehta,Vegetable Pulao & Raita,12.0,5,BOM-400001,AVAILABLE
+dec5cc3d-4cf3-4cad-a718-fb6d9352f9fe,,Anonymous,"Wedding Feast Leftovers — Paneer, Biryani, Gulab Jamun",45.0,6,DEL-110001,AVAILABLE
+058fbec2-90ee-4714-9b73-6ade4ba13990,,Sita Devi,"Idli, Sambar & Coconut Chutney",5.0,4,MAA-600001,AVAILABLE
+24c17967-48be-451f-971f-c016fb7249f2,,Ankit Jain,Pav Bhaji (20 plates),10.0,3,BOM-400001,AVAILABLE
+a44b6610-2701-4fbc-a25c-a36e6d9f2849,,Kavita Reddy,Hyderabadi Dum Biryani (Veg & Non-veg),30.0,4,HYD-500001,AVAILABLE
+5f413236-1414-44ac-a682-c206cc3b1727,,Anonymous,"Fresh Fruit Baskets — Mangoes, Bananas, Guava",15.0,48,CCU-700001,AVAILABLE
+ef2004f0-9844-4526-a2e2-c4c18b6287d1,,Suresh Kumar,Chole Bhature & Lassi,7.0,3,DEL-110001,AVAILABLE
+7d600ca5-1c5d-4938-b012-faa6accab182,,Meena Iyer,Dosa Batter & Sambar (bulk),20.0,12,MAA-600001,AVAILABLE
+d9164831-6655-40b3-bccc-5f9e5ffb399d,,Community Kitchen Noida,Mixed Veg Rice & Dal Tadka,50.0,5,DEL-110001,AVAILABLE

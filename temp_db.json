@@ -1,0 +1,22 @@
+[
+  {
+    "name": "NYC Downtown Shelter",
+    "location_code": "NYC-100"
+  },
+  {
+    "name": "Brooklyn Daily Relief",
+    "location_code": "NYC-100"
+  },
+  {
+    "name": "Boston Central Foodbank",
+    "location_code": "BOS-021"
+  },
+  {
+    "name": "SF Golden Harvest",
+    "location_code": "SFO-941"
+  },
+  {
+    "name": "Chicago Hope Kitchen",
+    "location_code": "CHI-606"
+  }
+]
